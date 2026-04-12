@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git lfs:*)",
+      "Bash(du -sh src/assets/thumbnails/*.png)"
+    ]
+  }
+}

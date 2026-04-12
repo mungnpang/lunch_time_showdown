@@ -1,0 +1,196 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 60vh;
+}
+
+.setupPanel {
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputGroup label {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.numControl {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.numControl button {
+  padding: 10px 16px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  background: rgba(255,255,255,0.05);
+  color: white;
+  transition: background 0.2s;
+}
+
+.numControl button:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.numControl input {
+  width: 60px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.numControl input::-webkit-outer-spin-button,
+.numControl input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.gamePanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  width: 100%;
+}
+
+.scoreBoard {
+  background: rgba(0,0,0,0.4);
+  padding: 1rem 2rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--glass-border);
+}
+
+.scoreLabel {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.scoreValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  line-height: 1;
+}
+
+.bombContainer {
+  font-size: 12rem;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+}
+
+@media (max-width: 480px) {
+  .bombContainer {
+    font-size: 9rem;
+    width: 240px;
+    height: 240px;
+  }
+}
+
+.bombContainer.playing {
+  cursor: pointer;
+  animation: heartbeat 1s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  transition: transform 0.1s;
+}
+
+.bombContainer.playing:active {
+  transform: scale(0.9);
+  animation-play-state: paused;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6));
+}
+
+.bombContainer.exploded {
+  animation: boom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  filter: drop-shadow(0 0 50px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 100px rgba(245, 158, 11, 0.8));
+}
+
+.messageBox {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playingText {
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  animation: pulseOpacity 2s infinite alternate;
+}
+
+.explodedText {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ef4444; /* Red 500 */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 20px rgba(239, 68, 68, 0.6);
+}
+
+/* Animations */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 20px 30px rgba(239, 68, 68, 0.2)); }
+  100% { transform: scale(1.1); filter: drop-shadow(0 20px 40px rgba(239, 68, 68, 0.4)); }
+}
+
+@keyframes boom {
+  0% { transform: scale(0.2); opacity: 0; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseOpacity {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* Screen Shake applied to container */
+.shakeScreen {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-2px, 2px, 0) rotate(-1deg); }
+  20%, 80% { transform: translate3d(4px, -2px, 0) rotate(2deg); }
+  30%, 50%, 70% { transform: translate3d(-8px, 4px, 0) rotate(-2deg); }
+  40%, 60% { transform: translate3d(8px, -4px, 0) rotate(2deg); }
+}
