@@ -1,0 +1,22 @@
+.gameCard {
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gameCard:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(100, 100, 111, 0.2);
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.gameCard:focus-visible {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(100, 100, 111, 0.2);
+  border-color: rgba(255, 255, 255, 1);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+}
