@@ -31,14 +31,32 @@ export default function Bomb() {
   const [activeRoomCode, setActiveRoomCode] = useState<string | null>(null);
   const [multiError, setMultiError]       = useState('');
   const [isSubmitting, setIsSubmitting]   = useState(false);
+  const [toast, setToast]                 = useState('');
 
   const room = useGameRoom(activeRoomCode);
+  const hadRoomDataRef = useRef(false);
 
   // ── 효과 ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, []);
+
+  // 스페이스바 / 엔터 키로 패스
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' && e.code !== 'Enter') return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLButtonElement) return;
+      e.preventDefault();
+      if (mode === 'multi' && room.isMyTurn) {
+        room.passBomb();
+      } else if (mode === 'solo' && gameStateRef.current === 'playing') {
+        passSoloBomb();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [mode, room]);
 
   // URL ?room= 파라미터 자동 처리
   useEffect(() => {
@@ -51,9 +69,15 @@ export default function Bomb() {
     }
   }, []);
 
-  // 방장 퇴장 감지 (방 데이터가 null로 변하는 경우)
+  // 방 데이터 수신 여부 추적
   useEffect(() => {
-    if (activeRoomCode && !room.isLoading && room.roomData === null) {
+    if (room.roomData !== null) hadRoomDataRef.current = true;
+  }, [room.roomData]);
+
+  // 방장 퇴장 감지 — 데이터를 한 번이라도 받은 뒤 null이 된 경우에만 감지
+  useEffect(() => {
+    if (activeRoomCode && !room.isLoading && room.roomData === null && hadRoomDataRef.current) {
+      hadRoomDataRef.current = false;
       setActiveRoomCode(null);
       setMultiError('방장이 방을 나갔습니다.');
     }
@@ -263,6 +287,17 @@ export default function Bomb() {
 
     return (
       <div className={styles.container}>
+        {toast && (
+          <div style={{
+            position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(30, 20, 10, 0.88)', color: 'white',
+            padding: '12px 20px', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 500,
+            zIndex: 9999, whiteSpace: 'nowrap',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+          }}>
+            {toast}
+          </div>
+        )}
         <div className={`glass-panel ${styles.setupPanel} animate-fade-in`}>
           <h2 style={{ textAlign: 'center', fontSize: '2rem' }}>💣 폭탄 돌리기</h2>
 
@@ -318,10 +353,16 @@ export default function Bomb() {
             <button
               className="btn-primary"
               style={{ width: '100%', padding: '16px', fontSize: '1.25rem' }}
-              onClick={() => room.startGame()}
-              disabled={playerCount < 2}
+              onClick={() => {
+                if (playerCount < 2) {
+                  setToast('게임 시작을 위해 최소 2명이 필요합니다');
+                  setTimeout(() => setToast(''), 2500);
+                } else {
+                  room.startGame();
+                }
+              }}
             >
-              {playerCount < 2 ? `${2 - playerCount}명 더 필요합니다` : '게임 시작!'}
+              시작
             </button>
           ) : (
             <p className={styles.waitingText}>방장이 게임을 시작하면 시작됩니다...</p>
@@ -377,7 +418,9 @@ export default function Bomb() {
               disabled={!isMyTurn}
               style={{ opacity: isMyTurn ? 1 : 0.4 }}
             >
-              {isMyTurn ? '💣 패스하기!' : '상대방의 차례...'}
+              {isMyTurn
+                ? '💣 패스하기!'
+                : `${orderedPlayers.find(p => p.isCurrent)?.name ?? '?'}의 차례`}
             </button>
           ) : (
             <div className={`animate-fade-in ${styles.resultArea}`}>

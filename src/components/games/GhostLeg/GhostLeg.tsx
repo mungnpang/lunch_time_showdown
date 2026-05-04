@@ -80,6 +80,17 @@ export default function GhostLeg() {
   const activePathsRef = useRef<Set<number>>(new Set());
   useEffect(() => { activePathsRef.current = activePaths; }, [activePaths]);
 
+  // 타이머 ref — 언마운트 시 일괄 정리
+  const participantTimersRef = useRef<Map<number, number>>(new Map());
+  const staggerTimersRef     = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => {
+      participantTimersRef.current.forEach(clearTimeout);
+      staggerTimersRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
   const numParticipants = participants.length;
   const svgWidth  = (numParticipants - 1) * COL_WIDTH;
   const svgHeight = ROWS * ROW_HEIGHT + PADDING_Y * 2;
@@ -132,6 +143,13 @@ export default function GhostLeg() {
     [lines, numParticipants, svgHeight]
   );
 
+  // 도착 컬럼 → 참가자 인덱스 역방향 조회 (O(1))
+  const destColToParticipant = useMemo(() => {
+    const map = new Map<number, number>();
+    destinations.forEach((destCol, participantIdx) => map.set(destCol, participantIdx));
+    return map;
+  }, [destinations]);
+
   // ── 게임 플레이 ─────────────────────────────────────────────────────────────
   const playParticipant = useCallback((idx: number) => {
     if (activePathsRef.current.has(idx)) return;
@@ -141,7 +159,8 @@ export default function GhostLeg() {
     const { dest, length } = pathData[idx];
     const durationMs = length * 1.5;
 
-    setTimeout(() => {
+    const timerId = window.setTimeout(() => {
+      participantTimersRef.current.delete(idx);
       setDestinations(prev => new Map(prev).set(idx, dest));
       setWinnerColors(prev => new Map(prev).set(dest, COLORS[idx % COLORS.length]));
       setActivePaths(prev => {
@@ -150,10 +169,16 @@ export default function GhostLeg() {
         return next;
       });
     }, durationMs);
+    participantTimersRef.current.set(idx, timerId);
   }, [pathData]);
 
   const playAll = useCallback(() => {
-    participants.forEach((_, i) => setTimeout(() => playParticipant(i), i * 400));
+    staggerTimersRef.current.forEach(clearTimeout);
+    staggerTimersRef.current = [];
+    participants.forEach((_, i) => {
+      const t = window.setTimeout(() => playParticipant(i), i * 400);
+      staggerTimersRef.current.push(t);
+    });
   }, [participants, playParticipant]);
 
   // ── 인원 조작 ─────────────────────────────────────────────────────────────
@@ -277,8 +302,7 @@ export default function GhostLeg() {
         {/* 결과 푸터 */}
         <div className={styles.resultsRow}>
           {results.map((r, i) => {
-            const winnerEntry = Array.from(destinations.entries()).find(([, destCol]) => destCol === i);
-            const winnerIndex = winnerEntry ? winnerEntry[0] : null;
+            const winnerIndex = destColToParticipant.get(i) ?? null;
             const isHit = r.includes('💣') || r.includes('벌칙');
             const customStyle = winnerColors.has(i)
               ? { background: winnerColors.get(i), color: 'white', borderColor: 'transparent', textShadow: '0 1px 2px rgba(0,0,0,0.2)', zIndex: 10 }
@@ -303,7 +327,7 @@ export default function GhostLeg() {
       {isBulkEditing && (
         <div className={styles.modalOverlay} onClick={() => setIsBulkEditing(false)}>
           <div className={`${styles.modalContent} ${styles.bulkEditModal}`} onClick={e => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>참가자 이름 일괄 변경</h3>
+            <h3 className={styles.modalTitle}>참가자 이름 변경</h3>
             <div className={styles.bulkEditList}>
               {tempParticipants.map((name, idx) => (
                 <div key={`bulk-${idx}`} className={styles.bulkEditItem}>

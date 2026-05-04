@@ -91,12 +91,12 @@
 
 .resultBox {
   padding: 2rem;
-  background: rgba(20, 184, 166, 0.1);
+  background: rgba(var(--accent-tertiary-rgb), 0.1);
   border: 1px solid var(--accent-tertiary);
   border-radius: 20px;
   text-align: center;
   width: 100%;
-  box-shadow: 0 0 40px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 0 40px rgba(var(--accent-tertiary-rgb), 0.2);
 }
 
 .resultTitle {
@@ -109,7 +109,7 @@
   font-size: 2.5rem;
   font-weight: 800;
   color: var(--accent-tertiary);
-  text-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+  text-shadow: 0 0 20px rgba(var(--accent-tertiary-rgb), 0.4);
 }
 
 .controlsPanel {
@@ -121,8 +121,8 @@
 }
 
 .optionsList {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
   min-height: 50px;
 }
@@ -130,14 +130,18 @@
 .optionChip {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 999px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .optionChip:hover {
@@ -150,9 +154,17 @@
 }
 
 .colorDot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.optionChip span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .removeBtn {
@@ -183,7 +195,7 @@
 .input:focus {
   outline: none;
   border-color: var(--accent-secondary);
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.2);
 }
 
 .input:disabled {

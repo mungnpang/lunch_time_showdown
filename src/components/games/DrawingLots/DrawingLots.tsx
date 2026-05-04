@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './DrawingLots.module.css';
 
 type Card = {
@@ -13,28 +13,33 @@ export default function DrawingLots() {
   const [hitCount, setHitCount] = useState(2);
   const [hitMessage, setHitMessage] = useState('당첨 ✨');
   const [missMessage, setMissMessage] = useState('통과');
-  
   const [cards, setCards] = useState<Card[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
+  const [error, setError] = useState('');
+
+  const shuffleTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => { if (shuffleTimerRef.current) clearTimeout(shuffleTimerRef.current); };
+  }, []);
 
   const startGame = () => {
     if (hitCount >= totalCount || hitCount <= 0 || totalCount < 2) {
-      alert('설정값이 올바르지 않습니다.');
+      setError('설정값이 올바르지 않습니다.');
       return;
     }
 
+    setError('');
     setIsShuffling(true);
     setGameStarted(true);
-    
-    // 초기 카드 생성
-    const newCards: Card[] = [];
-    for (let i = 0; i < hitCount; i++) {
-      newCards.push({ id: 0, result: hitMessage, isFlipped: false, isHit: true });
-    }
-    for (let i = hitCount; i < totalCount; i++) {
-      newCards.push({ id: 0, result: missMessage, isFlipped: false, isHit: false });
-    }
+
+    const newCards: Card[] = Array.from({ length: totalCount }, (_, i) => ({
+      id: i,
+      result: i < hitCount ? hitMessage : missMessage,
+      isFlipped: false,
+      isHit: i < hitCount,
+    }));
 
     // Fisher-Yates Shuffle
     for (let i = newCards.length - 1; i > 0; i--) {
@@ -42,11 +47,9 @@ export default function DrawingLots() {
       [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
     }
 
-    // 고유 ID 할당
-    newCards.forEach((c, idx) => c.id = idx);
-
     // 셔플 애니메이션 연출을 위해 지연 적용
-    setTimeout(() => {
+    shuffleTimerRef.current = window.setTimeout(() => {
+      shuffleTimerRef.current = null;
       setCards(newCards);
       setIsShuffling(false);
     }, 800);
@@ -54,7 +57,7 @@ export default function DrawingLots() {
 
   const handleCardClick = (index: number) => {
     if (!gameStarted || isShuffling || cards[index].isFlipped) return;
-    
+
     setCards(prev => {
       const next = [...prev];
       next[index] = { ...next[index], isFlipped: true };
@@ -63,6 +66,7 @@ export default function DrawingLots() {
   };
 
   const resetGame = () => {
+    setError('');
     setGameStarted(false);
     setCards([]);
   };
@@ -72,22 +76,22 @@ export default function DrawingLots() {
       {!gameStarted ? (
         <div className={`glass-panel ${styles.setupPanel} animate-fade-in`}>
           <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>제비 뽑기 설정</h2>
-          
+
           <div className={styles.inputGroup}>
             <label>총 제비 개수</label>
             <div className={styles.numControl}>
-              <button type="button" onClick={() => setTotalCount(c => Math.max(2, c - 1))}>-</button>
+              <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.max(2, c - 1)); }}>-</button>
               <input type="number" readOnly value={totalCount} />
-              <button type="button" onClick={() => setTotalCount(c => Math.min(100, c + 1))}>+</button>
+              <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.min(100, c + 1)); }}>+</button>
             </div>
           </div>
 
           <div className={styles.inputGroup}>
             <label>당첨(혹은 벌칙) 개수</label>
             <div className={styles.numControl}>
-              <button type="button" onClick={() => setHitCount(c => Math.max(1, c - 1))}>-</button>
+              <button type="button" onClick={() => { setError(''); setHitCount(c => Math.max(1, c - 1)); }}>-</button>
               <input type="number" readOnly value={hitCount} />
-              <button type="button" onClick={() => setHitCount(c => Math.min(totalCount - 1, c + 1))}>+</button>
+              <button type="button" onClick={() => { setError(''); setHitCount(c => Math.min(totalCount - 1, c + 1)); }}>+</button>
             </div>
           </div>
 
@@ -95,25 +99,30 @@ export default function DrawingLots() {
 
           <div className={styles.textInputGroup}>
             <label>당첨 결과 텍스트</label>
-            <input 
-              type="text" 
-              value={hitMessage} 
-              onChange={(e) => setHitMessage(e.target.value)} 
+            <input
+              type="text"
+              value={hitMessage}
+              onChange={(e) => setHitMessage(e.target.value)}
               className={styles.textInput}
             />
           </div>
 
           <div className={styles.textInputGroup}>
             <label>통과 결과 텍스트</label>
-            <input 
-              type="text" 
-              value={missMessage} 
-              onChange={(e) => setMissMessage(e.target.value)} 
+            <input
+              type="text"
+              value={missMessage}
+              onChange={(e) => setMissMessage(e.target.value)}
               className={styles.textInput}
             />
           </div>
 
-          <button className="btn-primary" style={{ width: '100%', marginTop: '1.5rem', padding: '16px' }} onClick={startGame}>
+          {error && (
+            <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>
+              {error}
+            </p>
+          )}
+          <button className="btn-primary" style={{ width: '100%', padding: '16px' }} onClick={startGame}>
             게임 시작!
           </button>
         </div>
@@ -137,8 +146,8 @@ export default function DrawingLots() {
           ) : (
             <div className={styles.cardsGrid}>
               {cards.map((card, idx) => (
-                <div 
-                  key={card.id} 
+                <div
+                  key={card.id}
                   className={`${styles.card} ${card.isFlipped ? styles.flipped : ''}`}
                   onClick={() => handleCardClick(idx)}
                 >

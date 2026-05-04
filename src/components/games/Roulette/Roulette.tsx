@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import styles from './Roulette.module.css';
 
-const DEFAULT_OPTIONS = ['🍕 피자쏘기', '☕ 커피쏘기', '🏃‍♂️ 심부름', '😎 패스', '💸 야식쏘기', '🧹 청소하기'];
+const DEFAULT_OPTIONS = ['👑 팀장님이 쏜다', '🐣 막내 차례', '✂️ 가위바위보 진 사람', '⏰ 오늘 늦은 사람', '😇 패스', '🤝 더치페이'];
 const COLORS = ['#ec4899', '#8b5cf6', '#14b8a6', '#f59e0b', '#3b82f6', '#ef4444', '#10b981', '#6366f1', '#eab308', '#2dd4bf', '#d946ef', '#64748b'];
 
 const getCoordinatesForPercent = (percent: number): [number, number] => [
@@ -16,6 +16,12 @@ export default function Roulette() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult]         = useState<string | null>(null);
 
+  const spinTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => { if (spinTimerRef.current) clearTimeout(spinTimerRef.current); };
+  }, []);
+
   const spin = () => {
     if (isSpinning || options.length < 2) return;
     setIsSpinning(true);
@@ -25,7 +31,8 @@ export default function Roulette() {
     const newRotation  = rotation + randomDegree;
     setRotation(newRotation);
 
-    setTimeout(() => {
+    spinTimerRef.current = window.setTimeout(() => {
+      spinTimerRef.current = null;
       setIsSpinning(false);
       const finalRotation = newRotation % 360;
       const itemAngle     = 360 / options.length;
@@ -44,7 +51,7 @@ export default function Roulette() {
 
   const addOption = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newOption.trim() && options.length < 12) {
+    if (newOption.trim() && options.length < 20) {
       setOptions(prev => [...prev, newOption.trim()]);
       setNewOption('');
       setResult(null);
@@ -65,7 +72,7 @@ export default function Roulette() {
       return (
         <g>
           <circle cx="100" cy="100" r="100" fill={COLORS[0]} />
-          <text x="100" y="100" fill="white" fontSize="12" fontWeight="bold" textAnchor="middle" alignmentBaseline="middle">
+          <text x="100" y="100" fill="white" fontSize="20" fontWeight="bold" textAnchor="middle" alignmentBaseline="middle">
             {options[0]}
           </text>
         </g>
@@ -149,16 +156,16 @@ export default function Roulette() {
           <input
             type="text"
             className={styles.input}
-            placeholder="새로운 항목 입력 (최대 12개)"
+            placeholder="새로운 항목 입력 (최대 20개)"
             value={newOption}
             onChange={(e) => setNewOption(e.target.value)}
-            disabled={isSpinning || options.length >= 12}
+            disabled={isSpinning || options.length >= 20}
           />
           <button
             type="submit"
             className="btn-primary"
-            style={{ padding: '12px 24px', borderRadius: '12px' }}
-            disabled={isSpinning || !newOption.trim() || options.length >= 12}
+            style={{ padding: '20px 24px', borderRadius: '20px' }}
+            disabled={isSpinning || !newOption.trim() || options.length >= 20}
           >
             추가
           </button>

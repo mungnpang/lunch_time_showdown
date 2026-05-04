@@ -3,7 +3,26 @@
     "allow": [
       "Bash(git lfs:*)",
       "Bash(du -sh src/assets/thumbnails/*.png)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(./node_modules/.bin/tsc -b)",
+      "Bash(./node_modules/.bin/vite build:*)",
+      "Bash(npm install:*)",
+      "Bash(node_modules/.bin/tsc -b)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "Bash(node_modules/.bin/vite --port 5174)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "Bash(pkill -f \"vite --port 5174\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git commit:*)",
+      "mcp__plugin_playwright_playwright__browser_console_messages"
     ]
   }
 }

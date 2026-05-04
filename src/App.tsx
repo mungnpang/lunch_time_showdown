@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import Roulette from './components/games/Roulette/Roulette';
-import GhostLeg from './components/games/GhostLeg/GhostLeg';
-import DrawingLots from './components/games/DrawingLots/DrawingLots';
-import Bomb from './components/games/Bomb/Bomb';
+import { useState, lazy, Suspense, Component, type ReactNode, type ComponentType } from 'react';
 import styles from './App.module.css';
 
 import rouletteThumb from './assets/thumbnails/roulette.png';
 import ghostlegThumb from './assets/thumbnails/ghostleg.png';
-import drawingThumb from './assets/thumbnails/drawing.png';
-import bombThumb from './assets/thumbnails/bomb.png';
+import drawingThumb  from './assets/thumbnails/drawing.png';
+import bombThumb     from './assets/thumbnails/bomb.png';
+
+const Roulette    = lazy(() => import('./components/games/Roulette/Roulette'));
+const GhostLeg    = lazy(() => import('./components/games/GhostLeg/GhostLeg'));
+const DrawingLots = lazy(() => import('./components/games/DrawingLots/DrawingLots'));
+const Bomb        = lazy(() => import('./components/games/Bomb/Bomb'));
 
 type GameId = 'roulette' | 'ghostleg' | 'drawing' | 'bomb';
 
@@ -17,24 +18,45 @@ interface GameInfo {
   name: string;
   description: string;
   thumbnail: string;
+  minCapacity?: string;
+  capacity: string;
 }
 
 const GAMES: GameInfo[] = [
-  { id: 'roulette', name: '돌림판',    description: '확률 기반 회전 돌림판',            thumbnail: rouletteThumb },
-  { id: 'ghostleg', name: '사다리 타기', description: '운명의 길을 따라가는 사다리 게임',   thumbnail: ghostlegThumb },
-  { id: 'drawing',  name: '제비 뽑기',  description: '간단하고 공정한 무작위 아이템 뽑기', thumbnail: drawingThumb },
-  { id: 'bomb',     name: '폭탄 돌리기', description: '보이지 않는 타이머, 숨막히는 긴장감', thumbnail: bombThumb },
+  { id: 'roulette', name: '돌림판',     description: '확률 기반 회전 돌림판',             thumbnail: rouletteThumb, minCapacity: '최소 2항목', capacity: '최대 20항목' },
+  { id: 'ghostleg', name: '사다리 타기', description: '운명의 길을 따라가는 사다리 게임',   thumbnail: ghostlegThumb, minCapacity: '최소 2명',   capacity: '최대 8명'    },
+  { id: 'drawing',  name: '제비 뽑기',  description: '간단하고 공정한 무작위 뽑기',  thumbnail: drawingThumb,  minCapacity: '최소 2항목',   capacity: '최대 100항목'  },
+  { id: 'bomb',     name: '폭탄 돌리기', description: '보이지 않는 타이머, 숨막히는 긴장감', thumbnail: bombThumb,    minCapacity: '최소 2명',   capacity: '최대 8명'    },
 ];
 
-const GAME_COMPONENTS: Record<GameId, React.ComponentType> = {
+const GAME_COMPONENTS: Record<GameId, ComponentType> = {
   roulette: Roulette,
   ghostleg: GhostLeg,
   drawing:  DrawingLots,
   bomb:     Bomb,
 };
 
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+          <p style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>게임을 불러오는 중 오류가 발생했습니다.</p>
+          <button className="btn-primary" onClick={() => this.setState({ hasError: false })}>
+            다시 시도
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
-  const [activeGame, setActiveGame] = useState<GameId | null>(null);
+  const hasRoomParam = new URLSearchParams(window.location.search).has('room');
+  const [activeGame, setActiveGame] = useState<GameId | null>(hasRoomParam ? 'bomb' : null);
 
   if (activeGame) {
     const game = GAMES.find(g => g.id === activeGame)!;
@@ -68,7 +90,13 @@ export default function App() {
         </header>
 
         <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-          <GameComponent />
+          <ErrorBoundary key={activeGame}>
+            <Suspense fallback={
+              <div style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>로딩 중...</div>
+            }>
+              <GameComponent />
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
     );
@@ -86,11 +114,8 @@ export default function App() {
           marginBottom: '1rem',
           letterSpacing: '-1px',
         }}>
-          나만 아니면 돼
+          Pickit
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.25rem', fontWeight: 500 }}>
-          모임의 재미를 더해줄 4가지 프리미엄 미니게임
-        </p>
       </header>
 
       <main style={{
@@ -107,7 +132,7 @@ export default function App() {
             role="button"
             tabIndex={0}
             className={`glass-panel animate-fade-in ${styles.gameCard}`}
-            style={{ animationDelay: `${index * 0.15}s` }}
+            style={{ animationDelay: `${index * 0.15}s`, display: 'flex', flexDirection: 'column' }}
             onClick={() => setActiveGame(game.id)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveGame(game.id); }}
           >
@@ -125,9 +150,31 @@ export default function App() {
               />
             </div>
             <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>{game.name}</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.95rem', minHeight: '44px' }}>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', fontSize: '0.95rem', flex: 1 }}>
               {game.description}
             </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              {game.minCapacity && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                  padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  background: 'rgba(0,0,0,0.05)',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                }}>
+                  <span>👥</span><span>{game.minCapacity}</span>
+                </span>
+              )}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 600,
+                color: 'var(--accent-secondary)',
+                background: 'rgba(var(--accent-primary-rgb), 0.1)',
+                border: '1px solid rgba(var(--accent-primary-rgb), 0.2)',
+              }}>
+                <span>👥</span><span>{game.capacity}</span>
+              </span>
+            </div>
             <button className="btn-primary" style={{ width: '100%' }} tabIndex={-1}>게임 시작</button>
           </div>
         ))}

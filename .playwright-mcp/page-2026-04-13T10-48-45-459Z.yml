@@ -1,0 +1,25 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "나만 아니면 돼" [level=1] [ref=e5]
+    - paragraph [ref=e6]: 모임의 재미를 더해줄 4가지 프리미엄 미니게임
+  - main [ref=e7]:
+    - button "돌림판 돌림판 확률 기반 회전 돌림판 게임 시작" [ref=e8] [cursor=pointer]:
+      - img "돌림판" [ref=e10]
+      - heading "돌림판" [level=3] [ref=e11]
+      - paragraph [ref=e12]: 확률 기반 회전 돌림판
+      - button "게임 시작" [ref=e13]
+    - button "사다리 타기 사다리 타기 운명의 길을 따라가는 사다리 게임 게임 시작" [ref=e14] [cursor=pointer]:
+      - img "사다리 타기" [ref=e16]
+      - heading "사다리 타기" [level=3] [ref=e17]
+      - paragraph [ref=e18]: 운명의 길을 따라가는 사다리 게임
+      - button "게임 시작" [ref=e19]
+    - button "제비 뽑기 제비 뽑기 간단하고 공정한 무작위 아이템 뽑기 게임 시작" [ref=e20] [cursor=pointer]:
+      - img "제비 뽑기" [ref=e22]
+      - heading "제비 뽑기" [level=3] [ref=e23]
+      - paragraph [ref=e24]: 간단하고 공정한 무작위 아이템 뽑기
+      - button "게임 시작" [ref=e25]
+    - button "폭탄 돌리기 폭탄 돌리기 보이지 않는 타이머, 숨막히는 긴장감 게임 시작" [ref=e26] [cursor=pointer]:
+      - img "폭탄 돌리기" [ref=e28]
+      - heading "폭탄 돌리기" [level=3] [ref=e29]
+      - paragraph [ref=e30]: 보이지 않는 타이머, 숨막히는 긴장감
+      - button "게임 시작" [ref=e31]
