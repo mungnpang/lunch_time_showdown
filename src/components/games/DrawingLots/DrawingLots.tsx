@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './DrawingLots.module.css';
 
 type Card = {
@@ -19,10 +20,22 @@ export default function DrawingLots() {
   const [error, setError] = useState('');
 
   const shuffleTimerRef = useRef<number | null>(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     return () => { if (shuffleTimerRef.current) clearTimeout(shuffleTimerRef.current); };
   }, []);
+
+  // 브라우저 뒤로가기로 phase가 사라지면 게임 초기화
+  useEffect(() => {
+    if (searchParams.get('phase') !== 'game' && gameStarted) {
+      if (shuffleTimerRef.current) clearTimeout(shuffleTimerRef.current);
+      setGameStarted(false);
+      setCards([]);
+      setError('');
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startGame = () => {
     if (hitCount >= totalCount || hitCount <= 0 || totalCount < 2) {
@@ -33,6 +46,7 @@ export default function DrawingLots() {
     setError('');
     setIsShuffling(true);
     setGameStarted(true);
+    navigate('?phase=game');
 
     const newCards: Card[] = Array.from({ length: totalCount }, (_, i) => ({
       id: i,
@@ -47,7 +61,30 @@ export default function DrawingLots() {
       [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
     }
 
-    // 셔플 애니메이션 연출을 위해 지연 적용
+    shuffleTimerRef.current = window.setTimeout(() => {
+      shuffleTimerRef.current = null;
+      setCards(newCards);
+      setIsShuffling(false);
+    }, 800);
+  };
+
+  const reshuffleGame = () => {
+    if (isShuffling) return;
+    setIsShuffling(true);
+    setCards([]);
+
+    const newCards: Card[] = Array.from({ length: totalCount }, (_, i) => ({
+      id: i,
+      result: i < hitCount ? hitMessage : missMessage,
+      isFlipped: false,
+      isHit: i < hitCount,
+    }));
+
+    for (let i = newCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
+    }
+
     shuffleTimerRef.current = window.setTimeout(() => {
       shuffleTimerRef.current = null;
       setCards(newCards);
@@ -65,66 +102,62 @@ export default function DrawingLots() {
     });
   };
 
-  const resetGame = () => {
-    setError('');
-    setGameStarted(false);
-    setCards([]);
-  };
-
   return (
     <div className={styles.container}>
       {!gameStarted ? (
-        <div className={`glass-panel ${styles.setupPanel} animate-fade-in`}>
-          <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>제비 뽑기 설정</h2>
+        <div className={styles.setupCenter}>
+          <div className={`glass-panel ${styles.setupPanel} animate-fade-in`}>
+            <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>제비 뽑기 설정</h2>
 
-          <div className={styles.inputGroup}>
-            <label>총 제비 개수</label>
-            <div className={styles.numControl}>
-              <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.max(2, c - 1)); }}>-</button>
-              <input type="number" readOnly value={totalCount} />
-              <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.min(100, c + 1)); }}>+</button>
+            <div className={styles.inputGroup}>
+              <label>총 제비 개수</label>
+              <div className={styles.numControl}>
+                <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.max(2, c - 1)); }}>-</button>
+                <input type="number" readOnly value={totalCount} />
+                <button type="button" onClick={() => { setError(''); setTotalCount(c => Math.min(100, c + 1)); }}>+</button>
+              </div>
             </div>
-          </div>
 
-          <div className={styles.inputGroup}>
-            <label>당첨(혹은 벌칙) 개수</label>
-            <div className={styles.numControl}>
-              <button type="button" onClick={() => { setError(''); setHitCount(c => Math.max(1, c - 1)); }}>-</button>
-              <input type="number" readOnly value={hitCount} />
-              <button type="button" onClick={() => { setError(''); setHitCount(c => Math.min(totalCount - 1, c + 1)); }}>+</button>
+            <div className={styles.inputGroup}>
+              <label>당첨(혹은 벌칙) 개수</label>
+              <div className={styles.numControl}>
+                <button type="button" onClick={() => { setError(''); setHitCount(c => Math.max(1, c - 1)); }}>-</button>
+                <input type="number" readOnly value={hitCount} />
+                <button type="button" onClick={() => { setError(''); setHitCount(c => Math.min(totalCount - 1, c + 1)); }}>+</button>
+              </div>
             </div>
+
+            <div className={styles.divider}></div>
+
+            <div className={styles.textInputGroup}>
+              <label>당첨 결과 텍스트</label>
+              <input
+                type="text"
+                value={hitMessage}
+                onChange={(e) => setHitMessage(e.target.value)}
+                className={styles.textInput}
+              />
+            </div>
+
+            <div className={styles.textInputGroup}>
+              <label>통과 결과 텍스트</label>
+              <input
+                type="text"
+                value={missMessage}
+                onChange={(e) => setMissMessage(e.target.value)}
+                className={styles.textInput}
+              />
+            </div>
+
+            {error && (
+              <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>
+                {error}
+              </p>
+            )}
+            <button className="btn-primary" style={{ width: '100%', padding: '16px' }} onClick={startGame}>
+              게임 시작!
+            </button>
           </div>
-
-          <div className={styles.divider}></div>
-
-          <div className={styles.textInputGroup}>
-            <label>당첨 결과 텍스트</label>
-            <input
-              type="text"
-              value={hitMessage}
-              onChange={(e) => setHitMessage(e.target.value)}
-              className={styles.textInput}
-            />
-          </div>
-
-          <div className={styles.textInputGroup}>
-            <label>통과 결과 텍스트</label>
-            <input
-              type="text"
-              value={missMessage}
-              onChange={(e) => setMissMessage(e.target.value)}
-              className={styles.textInput}
-            />
-          </div>
-
-          {error && (
-            <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>
-              {error}
-            </p>
-          )}
-          <button className="btn-primary" style={{ width: '100%', padding: '16px' }} onClick={startGame}>
-            게임 시작!
-          </button>
         </div>
       ) : (
         <div className={`${styles.gamePanel} animate-fade-in`}>
@@ -133,9 +166,14 @@ export default function DrawingLots() {
               <h3>총 {totalCount}개 중 당첨 {hitCount}개</h3>
               <p style={{ color: 'var(--text-secondary)' }}>카드를 클릭하여 결과를 확인하세요</p>
             </div>
-            <button className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.9rem' }} onClick={resetGame}>
-              다시 설정하기
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.9rem' }} onClick={reshuffleGame} disabled={isShuffling}>
+                다시 섞기
+              </button>
+              <button className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.9rem' }} onClick={() => navigate(-1)}>
+                다시 설정하기
+              </button>
+            </div>
           </div>
 
           {isShuffling ? (

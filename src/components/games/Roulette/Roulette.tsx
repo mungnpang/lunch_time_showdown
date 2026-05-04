@@ -82,6 +82,9 @@ export default function Roulette() {
     const percentPerSlice = 1 / options.length;
     let cumulativePercent = 0;
 
+    // 텍스트 반경 50 위치에서의 호 너비로 폰트 크기 계산
+    const arcWidth = 2 * 50 * Math.sin(Math.PI / options.length) * 0.80;
+
     return options.map((option, i) => {
       const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
       cumulativePercent += percentPerSlice;
@@ -90,7 +93,9 @@ export default function Roulette() {
       const largeArcFlag = percentPerSlice > 0.5 ? 1 : 0;
       const pathData = `M 100 100 L ${100 + startX} ${100 + startY} A 100 100 0 ${largeArcFlag} 1 ${100 + endX} ${100 + endY} Z`;
       const textAngle = (i + 0.5) * (360 / options.length);
-      const label = option.length > 7 ? option.substring(0, 7) + '..' : option;
+
+      // 한글/이모지는 글자당 약 0.65em 너비로 계산
+      const fontSize = Math.min(12, Math.max(5, arcWidth / (option.length * 0.65)));
 
       return (
         <g key={i}>
@@ -98,13 +103,13 @@ export default function Roulette() {
           <text
             x="150" y="100"
             fill="white"
-            fontSize={options.length > 8 ? '8' : '10'}
+            fontSize={fontSize}
             fontWeight="bold"
             textAnchor="middle"
             alignmentBaseline="middle"
             transform={`rotate(${textAngle}, 100, 100)`}
           >
-            {label}
+            {option}
           </text>
         </g>
       );

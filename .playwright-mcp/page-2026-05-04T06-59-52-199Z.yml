@@ -1,0 +1,8 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "돌림판 돌림판" [level=2] [ref=e5]:
+      - img "돌림판" [ref=e6]
+      - text: 돌림판
+    - button "← 메인으로" [ref=e7] [cursor=pointer]
+  - main [ref=e8]:
+    - generic [ref=e9]: 로딩 중...

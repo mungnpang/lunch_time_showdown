@@ -26,8 +26,10 @@
 
 .wheelWrapper {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: min(300px, 85vw);
+  height: min(300px, 85vw);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
 }
 
@@ -73,7 +75,8 @@
 }
 
 .resultContainer {
-  min-width: 280px;
+  min-width: min(280px, 100%);
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -128,8 +131,8 @@
 }
 
 .optionChip {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(var(--accent-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.18);
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 0.85rem;

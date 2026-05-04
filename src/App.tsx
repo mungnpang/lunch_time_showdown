@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense, Component, type ReactNode, type ComponentType } from 'react';
+import { lazy, Suspense, Component, type ReactNode, type ComponentType } from 'react';
+import { Routes, Route, useNavigate, useParams, Navigate, useSearchParams } from 'react-router-dom';
 import styles from './App.module.css';
 
 import rouletteThumb from './assets/thumbnails/roulette.png';
@@ -25,7 +26,7 @@ interface GameInfo {
 const GAMES: GameInfo[] = [
   { id: 'roulette', name: '돌림판',     description: '확률 기반 회전 돌림판',             thumbnail: rouletteThumb, minCapacity: '최소 2항목', capacity: '최대 20항목' },
   { id: 'ghostleg', name: '사다리 타기', description: '운명의 길을 따라가는 사다리 게임',   thumbnail: ghostlegThumb, minCapacity: '최소 2명',   capacity: '최대 8명'    },
-  { id: 'drawing',  name: '제비 뽑기',  description: '간단하고 공정한 무작위 뽑기',  thumbnail: drawingThumb,  minCapacity: '최소 2항목',   capacity: '최대 100항목'  },
+  { id: 'drawing',  name: '제비 뽑기',  description: '간단하고 공정한 무작위 뽑기',        thumbnail: drawingThumb,  minCapacity: '최소 2항목', capacity: '최대 100항목' },
   { id: 'bomb',     name: '폭탄 돌리기', description: '보이지 않는 타이머, 숨막히는 긴장감', thumbnail: bombThumb,    minCapacity: '최소 2명',   capacity: '최대 8명'    },
 ];
 
@@ -54,53 +55,66 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-export default function App() {
-  const hasRoomParam = new URLSearchParams(window.location.search).has('room');
-  const [activeGame, setActiveGame] = useState<GameId | null>(hasRoomParam ? 'bomb' : null);
+// ── 게임 페이지 ──────────────────────────────────────────────────────────────
 
-  if (activeGame) {
-    const game = GAMES.find(g => g.id === activeGame)!;
-    const GameComponent = GAME_COMPONENTS[activeGame];
+function GamePage() {
+  const { gameId } = useParams<{ gameId: string }>();
+  const navigate   = useNavigate();
 
-    return (
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <header className="glass-panel animate-fade-in" style={{
-          margin: '1rem',
-          padding: '1rem 2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderRadius: '16px',
-        }}>
-          <h2 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <img
-              src={game.thumbnail}
-              alt={game.name}
-              style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'contain' }}
-            />
-            {game.name}
-          </h2>
-          <button
-            className="btn-primary"
-            style={{ padding: '8px 20px', fontSize: '1rem' }}
-            onClick={() => setActiveGame(null)}
-          >
-            ← 메인으로
-          </button>
-        </header>
+  const game = GAMES.find(g => g.id === gameId);
+  if (!game) return <Navigate to="/" replace />;
 
-        <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-          <ErrorBoundary key={activeGame}>
-            <Suspense fallback={
-              <div style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>로딩 중...</div>
-            }>
-              <GameComponent />
-            </Suspense>
-          </ErrorBoundary>
-        </main>
-      </div>
-    );
-  }
+  const GameComponent = GAME_COMPONENTS[game.id];
+
+  return (
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <header className="glass-panel animate-fade-in" style={{
+        margin: '1rem',
+        padding: '1rem 2rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderRadius: '16px',
+      }}>
+        <h2 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <img
+            src={game.thumbnail}
+            alt={game.name}
+            style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'contain' }}
+          />
+          {game.name}
+        </h2>
+        <button
+          className="btn-primary"
+          style={{ padding: '8px 20px', fontSize: '1rem' }}
+          onClick={() => navigate('/')}
+        >
+          ← 메인으로
+        </button>
+      </header>
+
+      <main style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <ErrorBoundary key={game.id}>
+          <Suspense fallback={
+            <div style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>로딩 중...</div>
+          }>
+            <GameComponent />
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+    </div>
+  );
+}
+
+// ── 메인 페이지 ──────────────────────────────────────────────────────────────
+
+function MainPage() {
+  const navigate              = useNavigate();
+  const [searchParams]        = useSearchParams();
+
+  // 구 형식 링크 (?room=XXXX) 대응 → /bomb?room=XXXX 로 리다이렉트
+  const roomParam = searchParams.get('room');
+  if (roomParam) return <Navigate to={`/bomb?room=${roomParam}`} replace />;
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
@@ -114,7 +128,7 @@ export default function App() {
           marginBottom: '1rem',
           letterSpacing: '-1px',
         }}>
-          Pickit
+          Pickaroo
         </h1>
       </header>
 
@@ -133,8 +147,8 @@ export default function App() {
             tabIndex={0}
             className={`glass-panel animate-fade-in ${styles.gameCard}`}
             style={{ animationDelay: `${index * 0.15}s`, display: 'flex', flexDirection: 'column' }}
-            onClick={() => setActiveGame(game.id)}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveGame(game.id); }}
+            onClick={() => navigate(`/${game.id}`)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(`/${game.id}`); }}
           >
             <div style={{
               marginBottom: '1.5rem',
@@ -180,5 +194,17 @@ export default function App() {
         ))}
       </main>
     </div>
+  );
+}
+
+// ── 앱 루트 ──────────────────────────────────────────────────────────────────
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/"         element={<MainPage />} />
+      <Route path="/:gameId"  element={<GamePage />} />
+      <Route path="*"         element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
