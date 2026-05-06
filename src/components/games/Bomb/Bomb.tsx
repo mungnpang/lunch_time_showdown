@@ -239,7 +239,7 @@ export default function Bomb() {
         className={`${styles.modeTab} ${mode === 'solo' ? styles.modeTabActive : ''}`}
         onClick={() => setMode('solo')}
       >
-        혼자 하기
+        로컬 플레이
       </button>
       <button
         className={`${styles.modeTab} ${mode === 'multi' ? styles.modeTabActive : ''}`}

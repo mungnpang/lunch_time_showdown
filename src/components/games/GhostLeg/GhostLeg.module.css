@@ -302,3 +302,285 @@
   0%   { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1);   opacity: 1; }
 }
+
+/* ── 멀티 공용 ────────────────────────────────────────────────────────── */
+
+.setupCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem 0;
+}
+
+.setupPanel {
+  width: 100%;
+  max-width: 440px;
+  padding: 2rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modeTabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.modeTab {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: background 0.2s, color 0.2s;
+}
+
+.modeTabActive {
+  background: var(--bg-color-1);
+  color: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+}
+
+.entryTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.entryTab {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.entryTabActive {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+
+.codeInput {
+  text-align: center;
+  letter-spacing: 0.4em;
+  font-weight: 700;
+  font-size: 1.3rem !important;
+}
+
+.multiInput {
+  background: var(--bg-color-1);
+  border: 1.5px solid rgba(var(--accent-primary-rgb), 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.multiInput:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.15);
+}
+
+.multiInput:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.roomCodeDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(var(--accent-primary-rgb), 0.07);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.roomCodeLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.roomCode {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: var(--accent-secondary);
+}
+
+.copyLinkBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(var(--accent-primary-rgb), 0.12);
+  color: var(--accent-secondary);
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.copyLinkBtn:hover {
+  background: rgba(var(--accent-primary-rgb), 0.22);
+}
+
+.playerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 48px;
+}
+
+.playerChip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(var(--accent-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.18);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.playerChipName {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.meBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--accent-secondary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.textRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.textSetting {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.textSetting label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.leaveBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.leaveBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+/* ── 자리 선택 ───────────────────────────────────────────────────────────── */
+
+.slotPickerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.slotPickerLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.slotPickerRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.slot {
+  flex: 1;
+  min-width: 60px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 2px dashed rgba(var(--accent-primary-rgb), 0.3);
+  background: rgba(var(--accent-primary-rgb), 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+}
+
+.slot:hover:not(.slotTaken) {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-primary-rgb), 0.6);
+  background: rgba(var(--accent-primary-rgb), 0.1);
+}
+
+.slotNumber {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}
+
+.slotName {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  color: var(--text-primary);
+}
+
+.slotMine {
+  border-style: solid;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.slotTaken {
+  border-style: solid;
+  border-color: transparent;
+  cursor: default;
+  opacity: 0.75;
+}

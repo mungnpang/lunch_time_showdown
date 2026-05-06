@@ -238,6 +238,7 @@
   border: 2px solid transparent;
   padding: 1rem;
   word-break: break-word;
+  flex-direction: column;
 }
 
 .cardHit {
@@ -252,4 +253,250 @@
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.2);
   color: var(--text-secondary);
+}
+
+/* ── 모드 탭 ──────────────────────────────────────────────────────────── */
+
+.modeTabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.modeTab {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: background 0.2s, color 0.2s;
+}
+
+.modeTabActive {
+  background: var(--bg-color-1);
+  color: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* ── 멀티: 입장 탭 ────────────────────────────────────────────────────── */
+
+.entryTabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.entryTab {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.entryTabActive {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+
+.codeInput {
+  text-align: center;
+  letter-spacing: 0.4em;
+  font-weight: 700;
+  font-size: 1.3rem !important;
+}
+
+/* ── 멀티: 방 코드 표시 ───────────────────────────────────────────────── */
+
+.roomCodeDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(var(--accent-primary-rgb), 0.07);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.roomCodeLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.roomCode {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: var(--accent-secondary);
+}
+
+.copyLinkBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(var(--accent-primary-rgb), 0.12);
+  color: var(--accent-secondary);
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.copyLinkBtn:hover {
+  background: rgba(var(--accent-primary-rgb), 0.22);
+}
+
+/* ── 멀티: 플레이어 리스트 ────────────────────────────────────────────── */
+
+.playerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 48px;
+}
+
+.playerChip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(var(--accent-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.18);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.playerChipName {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.meBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--accent-secondary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.leaveBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.leaveBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+/* ── 멀티: 내 카드 (게임 화면) ────────────────────────────────────────── */
+
+.myCard {
+  width: min(240px, 70vw);
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.myCardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  border-radius: 20px;
+}
+
+.myCardFlipped .myCardInner {
+  transform: rotateY(180deg);
+}
+
+.myCardFront, .myCardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.myCardFront {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+  border: 1px solid var(--glass-border);
+}
+
+.myCardBack {
+  transform: rotateY(180deg);
+  border: 2px solid transparent;
+  padding: 1.5rem;
+}
+
+.myCardHit {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  text-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);
+}
+
+.myCardMiss {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-secondary);
+}
+
+/* ── 멀티: 플레이어 상태 리스트 ───────────────────────────────────────── */
+
+.playerStatusList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.playerStatusChip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(var(--accent-primary-rgb), 0.04);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.playerStatusFlipped {
+  background: rgba(var(--accent-tertiary-rgb), 0.1);
+  border-color: rgba(var(--accent-tertiary-rgb), 0.35);
 }
