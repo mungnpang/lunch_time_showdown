@@ -7,10 +7,11 @@ import ghostlegThumb from './assets/thumbnails/ghostleg.png';
 import drawingThumb  from './assets/thumbnails/drawing.png';
 import bombThumb     from './assets/thumbnails/bomb.png';
 
-const Roulette    = lazy(() => import('./components/games/Roulette/Roulette'));
-const GhostLeg    = lazy(() => import('./components/games/GhostLeg/GhostLeg'));
-const DrawingLots = lazy(() => import('./components/games/DrawingLots/DrawingLots'));
-const Bomb        = lazy(() => import('./components/games/Bomb/Bomb'));
+const Roulette      = lazy(() => import('./components/games/Roulette/Roulette'));
+const GhostLeg      = lazy(() => import('./components/games/GhostLeg/GhostLeg'));
+const DrawingLots   = lazy(() => import('./components/games/DrawingLots/DrawingLots'));
+const Bomb          = lazy(() => import('./components/games/Bomb/Bomb'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 
 type GameId = 'roulette' | 'ghostleg' | 'drawing' | 'bomb';
 
@@ -136,7 +137,7 @@ function MainPage() {
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '2rem',
-        padding: '1rem 0 4rem',
+        padding: '1rem 0 2rem',
         maxWidth: '800px',
         margin: '0 auto',
       }}>
@@ -193,6 +194,15 @@ function MainPage() {
           </div>
         ))}
       </main>
+
+      <footer style={{ textAlign: 'center', padding: '1.5rem 0 3rem', fontSize: '0.9rem' }}>
+        <a href="/privacy" style={{ color: 'var(--accent-secondary)', textDecoration: 'underline', fontWeight: 600 }}
+          onClick={e => { e.preventDefault(); navigate('/privacy'); }}>
+          개인정보처리방침
+        </a>
+        <span style={{ margin: '0 0.75rem', color: 'var(--text-secondary)', opacity: 0.5 }}>·</span>
+        <span style={{ color: 'var(--text-secondary)' }}>© 2026 Pickaroo</span>
+      </footer>
     </div>
   );
 }
@@ -203,6 +213,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/"         element={<MainPage />} />
+      <Route path="/privacy"  element={<Suspense fallback={null}><PrivacyPolicy /></Suspense>} />
       <Route path="/:gameId"  element={<GamePage />} />
       <Route path="*"         element={<Navigate to="/" replace />} />
     </Routes>
