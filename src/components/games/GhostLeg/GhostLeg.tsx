@@ -205,8 +205,6 @@ export default function GhostLeg() {
   // ── 로컬: 사다리 관련 ─────────────────────────────────────────────────
 
   const numParticipants = participants.length;
-  const svgWidth  = (numParticipants - 1) * COL_WIDTH;
-  const svgHeight = ROWS * ROW_HEIGHT + PADDING_Y * 2;
 
   const generateLines = useCallback(() => {
     setActivePaths(new Set()); setDestinations(new Map()); setWinnerColors(new Map());
