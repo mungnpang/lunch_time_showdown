@@ -1,5 +1,5 @@
-import { lazy, Suspense, Component, type ReactNode, type ComponentType } from 'react';
-import { Routes, Route, useNavigate, useParams, Navigate, useSearchParams } from 'react-router-dom';
+import { lazy, Suspense, Component, useEffect, type ReactNode, type ComponentType } from 'react';
+import { Routes, Route, useNavigate, useParams, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import styles from './App.module.css';
 
 import rouletteThumb from './assets/thumbnails/roulette.png';
@@ -209,13 +209,31 @@ function MainPage() {
 
 // ── 앱 루트 ──────────────────────────────────────────────────────────────────
 
+function Analytics() {
+  const location = useLocation();
+  useEffect(() => {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', 'page_view', {
+      page_path: location.pathname + location.search,
+    });
+  }, [location]);
+  return null;
+}
+
+declare global {
+  interface Window { gtag?: (...args: unknown[]) => void; dataLayer?: unknown[]; }
+}
+
 export default function App() {
   return (
+    <>
+    <Analytics />
     <Routes>
       <Route path="/"         element={<MainPage />} />
       <Route path="/privacy"  element={<Suspense fallback={null}><PrivacyPolicy /></Suspense>} />
       <Route path="/:gameId"  element={<GamePage />} />
       <Route path="*"         element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
