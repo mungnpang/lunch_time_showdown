@@ -22,7 +22,10 @@
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
       "Bash(git commit:*)",
-      "mcp__plugin_playwright_playwright__browser_console_messages"
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "Bash(file /Users/jacob/Desktop/mungnpang/lunch_time_showdown/src/assets/thumbnails/*.png)",
+      "Bash(npm list:*)",
+      "Bash(node:*)"
     ]
   }
 }
