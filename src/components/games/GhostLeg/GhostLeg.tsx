@@ -238,7 +238,7 @@ export default function GhostLeg() {
     setLines(newLines);
   }, [numParticipants]);
 
-  useEffect(() => { if (mode === 'local' && modeChosen) generateLines(); }, [generateLines]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (mode === 'local' && modeChosen) generateLines(); }, [generateLines, modeChosen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 렌더에 사용할 실제 데이터 (로컬 vs 멀티)
   const activeParticipants = (mode === 'multi' && multiGameData) ? multiGameData.participants : participants;
