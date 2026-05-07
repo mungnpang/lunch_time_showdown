@@ -254,10 +254,9 @@ export default function GhostLeg() {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      // 총 수평 패딩: gameMain + gameBoard (모바일/데스크탑 각각 다름)
-      const totalPad = w <= 600 ? 48 : 112;
+      const totalPad = w <= 600 ? 40 : 112;
       const available = w - totalPad;
-      setColWidth(Math.min(COL_WIDTH, Math.max(55, Math.floor(available / activeN))));
+      setColWidth(Math.min(COL_WIDTH, Math.floor(available / activeN)));
     };
     update();
     window.addEventListener('resize', update);
