@@ -585,7 +585,49 @@
   opacity: 0.75;
 }
 
+.localControls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.controlBtn {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border-radius: 12px;
+}
+
+.startBtn {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
 @media (max-width: 600px) {
+  .header {
+    gap: 0.75rem;
+  }
+
+  .localControls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .controlBtn {
+    padding: 7px 8px;
+    font-size: 0.82rem;
+    text-align: center;
+  }
+
+  .startBtn {
+    grid-column: 1 / -1;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
+
   .participantsRow, .resultsRow {
     height: 48px;
   }

@@ -33,14 +33,31 @@
 }
 
 .inputGroup {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
+  gap: 1rem;
 }
 
 .inputGroup label {
   font-size: 1.1rem;
   font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .inputGroup label {
+    font-size: 0.9rem;
+  }
+
+  .numControl button {
+    padding: 8px 12px;
+    font-size: 1.1rem;
+  }
+
+  .numControl input {
+    width: 40px;
+    font-size: 1rem;
+  }
 }
 
 .numControl {

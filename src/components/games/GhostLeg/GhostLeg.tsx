@@ -696,12 +696,12 @@ export default function GhostLeg() {
             ← 돌아가기
           </button>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', background: '#ccfbf1', color: '#0d9488', borderRadius: '12px' }} onClick={addColumn} disabled={numParticipants >= 8}>인원 +</button>
-          <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', background: '#cfd9ff', color: '#4158d6', borderRadius: '12px' }} onClick={removeColumn} disabled={numParticipants <= 2}>인원 -</button>
-          <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', background: '#efd2ff', color: '#9333ea', borderRadius: '12px' }} onClick={generateLines}>다시 섞기</button>
-          <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', background: '#e0e7ff', color: '#4f46e5', borderRadius: '12px' }} onClick={openBulkEdit} disabled={activePaths.size > 0}>이름 바꾸기</button>
-          <button className="btn-primary" style={{ padding: '12px 24px', fontSize: '1.1rem', background: '#4f46e5', color: 'white', borderRadius: '12px' }} onClick={playAll}>전체 시작하기</button>
+        <div className={styles.localControls}>
+          <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#ccfbf1', color: '#0d9488' }} onClick={addColumn} disabled={numParticipants >= 8}>인원 +</button>
+          <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#cfd9ff', color: '#4158d6' }} onClick={removeColumn} disabled={numParticipants <= 2}>인원 -</button>
+          <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#efd2ff', color: '#9333ea' }} onClick={generateLines}>다시 섞기</button>
+          <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#e0e7ff', color: '#4f46e5' }} onClick={openBulkEdit} disabled={activePaths.size > 0}>이름 바꾸기</button>
+          <button className={`btn-primary ${styles.startBtn}`} style={{ background: '#4f46e5', color: 'white' }} onClick={playAll}>전체 시작하기</button>
         </div>
       </header>
 
