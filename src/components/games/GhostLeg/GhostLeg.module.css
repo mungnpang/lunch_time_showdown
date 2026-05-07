@@ -72,7 +72,7 @@
   font-family: inherit;
   font-size: 0.9rem;
   padding: 8px;
-  width: 80px;
+  width: calc(100% - 8px);
   text-align: center;
   position: relative;
   transition: all 0.3s ease;
@@ -94,7 +94,7 @@
 }
 
 .rInput {
-  width: 80px;
+  width: calc(100% - 8px);
   height: 40px;
   background: #fdf9f2;
   border: 1px solid #e0d4c0;
@@ -583,4 +583,25 @@
   border-color: transparent;
   cursor: default;
   opacity: 0.75;
+}
+
+@media (max-width: 600px) {
+  .participantsRow, .resultsRow {
+    height: 48px;
+  }
+
+  .pInput {
+    font-size: 0.78rem;
+    padding: 6px 4px;
+    border-radius: 6px;
+  }
+
+  .rInput {
+    font-size: 0.78rem;
+    height: 34px;
+  }
+
+  .gameBoard {
+    padding: 1rem 0.75rem;
+  }
 }

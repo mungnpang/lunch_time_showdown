@@ -69,32 +69,24 @@ function GamePage() {
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <header className="glass-panel animate-fade-in" style={{
-        margin: '1rem',
-        padding: '1rem 2rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderRadius: '16px',
-      }}>
-        <h2 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <header className={`glass-panel animate-fade-in ${styles.gameHeader}`}>
+        <h2 className={styles.gameHeaderTitle}>
           <img
             src={game.thumbnail}
             alt={game.name}
-            style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'contain' }}
+            className={styles.gameHeaderThumb}
           />
           {game.name}
         </h2>
         <button
-          className="btn-primary"
-          style={{ padding: '8px 20px', fontSize: '1rem' }}
+          className={`btn-primary ${styles.gameHeaderBtn}`}
           onClick={() => navigate('/')}
         >
           ← 메인으로
         </button>
       </header>
 
-      <main style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <main className={styles.gameMain}>
         <ErrorBoundary key={game.id}>
           <Suspense fallback={
             <div style={{ color: 'var(--text-secondary)', fontSize: '1.25rem' }}>로딩 중...</div>
@@ -118,29 +110,18 @@ function MainPage() {
   if (roomParam) return <Navigate to={`/bomb?room=${roomParam}`} replace />;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-      <header className="animate-fade-in" style={{ textAlign: 'center', padding: '3rem 0 4rem' }}>
-        <h1 style={{
-          fontSize: '4.5rem',
-          fontWeight: 800,
+    <div style={{ padding: '1.25rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      <header className={`animate-fade-in ${styles.mainHeader}`}>
+        <h1 className={styles.mainTitle} style={{
           background: 'linear-gradient(to right, var(--accent-primary), var(--accent-tertiary))',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          marginBottom: '1rem',
-          letterSpacing: '-1px',
         }}>
           Pickaroo
         </h1>
       </header>
 
-      <main style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '2rem',
-        padding: '1rem 0 2rem',
-        maxWidth: '800px',
-        margin: '0 auto',
-      }}>
+      <main className={styles.gameGrid}>
         {GAMES.map((game, index) => (
           <div
             key={game.id}
@@ -209,6 +190,62 @@ function MainPage() {
 
 // ── 앱 루트 ──────────────────────────────────────────────────────────────────
 
+const PAGE_META: Record<string, { title: string; description: string; keywords?: string }> = {
+  '/': {
+    title: 'Pickaroo — 돌림판 · 사다리 타기 · 제비 뽑기 · 폭탄 돌리기',
+    description: '점심 메뉴, 당번, 벌칙을 재미있게 결정하세요. 돌림판·사다리 타기·제비 뽑기·폭탄 돌리기 — 모임을 위한 무료 미니게임 모음',
+  },
+  '/roulette': {
+    title: '돌림판 | Pickaroo — 무료 온라인 돌림판',
+    description: '점심 메뉴, 벌칙, 당번을 공정하게 결정하는 무료 온라인 돌림판. 최대 20항목 설정 가능. 확률 조정 기능 지원.',
+    keywords: '돌림판, 온라인 돌림판, 무료 돌림판, 랜덤 뽑기, 점심 메뉴 뽑기',
+  },
+  '/ghostleg': {
+    title: '사다리 타기 | Pickaroo — 무료 온라인 사다리 게임',
+    description: '운명의 사다리를 타고 결과를 확인하세요. 최대 8명 멀티플레이 지원. 무료 온라인 사다리 타기 게임.',
+    keywords: '사다리 타기, 온라인 사다리, 무료 사다리 타기, 사다리 게임',
+  },
+  '/drawing': {
+    title: '제비 뽑기 | Pickaroo — 무료 온라인 제비뽑기',
+    description: '간단하고 공정한 무작위 제비 뽑기. 최대 100항목 설정 가능. 당번 정하기, 벌칙 정하기에 딱.',
+    keywords: '제비 뽑기, 온라인 제비뽑기, 무료 뽑기, 랜덤 선택',
+  },
+  '/bomb': {
+    title: '폭탄 돌리기 | Pickaroo — 무료 온라인 폭탄 게임',
+    description: '보이지 않는 타이머로 긴장감 넘치는 폭탄 돌리기. 최대 8명 멀티플레이 지원. 모임 분위기를 살려줄 무료 미니게임.',
+    keywords: '폭탄 돌리기, 폭탄 게임, 온라인 폭탄, 모임 게임',
+  },
+};
+
+function setMeta(name: string, content: string) {
+  let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+  if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+  el.content = content;
+}
+
+function setOgMeta(property: string, content: string) {
+  let el = document.querySelector<HTMLMetaElement>(`meta[property="${property}"]`);
+  if (!el) { el = document.createElement('meta'); el.setAttribute('property', property); document.head.appendChild(el); }
+  el.content = content;
+}
+
+function MetaTags() {
+  const location = useLocation();
+  useEffect(() => {
+    const pathname = location.pathname.split('?')[0];
+    const meta = PAGE_META[pathname] ?? PAGE_META['/'];
+    document.title = meta.title;
+    setMeta('description', meta.description);
+    if (meta.keywords) setMeta('keywords', meta.keywords);
+    setOgMeta('og:title', meta.title);
+    setOgMeta('og:description', meta.description);
+    setOgMeta('og:url', `https://pickaroo.xyz${pathname}`);
+    setMeta('twitter:title', meta.title);
+    setMeta('twitter:description', meta.description);
+  }, [location]);
+  return null;
+}
+
 function Analytics() {
   const location = useLocation();
   useEffect(() => {
@@ -227,6 +264,7 @@ declare global {
 export default function App() {
   return (
     <>
+    <MetaTags />
     <Analytics />
     <Routes>
       <Route path="/"         element={<MainPage />} />

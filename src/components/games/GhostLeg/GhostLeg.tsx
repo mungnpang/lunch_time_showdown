@@ -37,16 +37,16 @@ function buildPath(lines: boolean[][], numParticipants: number, startIndex: numb
   return path;
 }
 
-function computePathMetrics(path: Step[], svgHeight: number): PathMetrics {
+function computePathMetrics(path: Step[], svgHeight: number, colWidth: number): PathMetrics {
   if (!path.length) return { d: '', length: 0, dest: 0 };
   const toY = (row: number) => row === -1 ? 0 : row === ROWS ? svgHeight : row * ROW_HEIGHT + PADDING_Y;
   let d = ''; let length = 0;
   for (let i = 0; i < path.length; i++) {
-    const x = path[i].col * COL_WIDTH, y = toY(path[i].row);
+    const x = path[i].col * colWidth, y = toY(path[i].row);
     if (i === 0) { d += `M ${x} ${y}`; }
     else {
       d += ` L ${x} ${y}`;
-      const px = path[i - 1].col * COL_WIDTH, py = toY(path[i - 1].row);
+      const px = path[i - 1].col * colWidth, py = toY(path[i - 1].row);
       length += Math.abs(x - px) + Math.abs(y - py);
     }
   }
@@ -61,6 +61,10 @@ export default function GhostLeg() {
   const [modeChosen, setModeChosen] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // ── 반응형 컬럼 너비 ──────────────────────────────────────────────────
+  const gameBoardRef = useRef<HTMLDivElement>(null);
+  const [colWidth, setColWidth] = useState(COL_WIDTH);
 
   // ── 로컬 상태 ─────────────────────────────────────────────────────────
   const [participants, setParticipants] = useState<string[]>(['유저 A', '유저 B', '유저 C', '유저 D']);
@@ -245,12 +249,25 @@ export default function GhostLeg() {
   const activeLines        = (mode === 'multi' && multiGameData) ? multiGameData.lines        : lines;
   const activeResults      = (mode === 'multi' && multiGameData) ? multiGameData.results      : results;
   const activeN = activeParticipants.length;
-  const activeSvgW = (activeN - 1) * COL_WIDTH;
+  const activeSvgW = (activeN - 1) * colWidth;
   const activeSvgH = ROWS * ROW_HEIGHT + PADDING_Y * 2;
 
+  useEffect(() => {
+    const el = gameBoardRef.current;
+    if (!el) return;
+    const update = () => {
+      const available = el.offsetWidth - 32;
+      setColWidth(Math.min(COL_WIDTH, Math.max(55, Math.floor(available / activeN))));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [activeN]);
+
   const pathData = useMemo<PathMetrics[]>(
-    () => activeParticipants.map((_, i) => computePathMetrics(buildPath(activeLines, activeN, i), activeSvgH)),
-    [activeLines, activeN, activeSvgH] // eslint-disable-line react-hooks/exhaustive-deps
+    () => activeParticipants.map((_, i) => computePathMetrics(buildPath(activeLines, activeN, i), activeSvgH, colWidth)),
+    [activeLines, activeN, activeSvgH, colWidth] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const destColToParticipant = useMemo(() => {
@@ -559,7 +576,7 @@ export default function GhostLeg() {
 
   // ── 사다리 렌더 (로컬 / 멀티 공유) ───────────────────────────────────
   const ladderBoard = (
-    <div className={styles.gameBoard} style={{ alignItems: 'center' }}>
+    <div ref={gameBoardRef} className={styles.gameBoard} style={{ alignItems: 'center' }}>
       <div className={styles.participantsRow}>
         {activeParticipants.map((p, i) => {
           const isMyCol = isMultiPlaying && i === myMultiIdx;
@@ -573,7 +590,7 @@ export default function GhostLeg() {
             : true;
 
           return (
-            <div key={`p-${i}`} className={styles.playerWrapper} style={{ width: COL_WIDTH }}>
+            <div key={`p-${i}`} className={styles.playerWrapper} style={{ width: colWidth }}>
               <div
                 className={`${styles.pInput} ${canClick ? styles.clickableInput : ''}`}
                 onClick={() => { if (canClick) { if (isMultiPlaying) room.revealPath(); else playParticipant(i); } }}
@@ -598,14 +615,14 @@ export default function GhostLeg() {
         })}
       </div>
 
-      <div className={styles.svgWrapper} style={{ width: activeSvgW, height: activeSvgH, marginLeft: COL_WIDTH / 2, marginRight: COL_WIDTH / 2 }}>
+      <div className={styles.svgWrapper} style={{ width: activeSvgW, height: activeSvgH, marginLeft: colWidth / 2, marginRight: colWidth / 2 }}>
         <svg width={activeSvgW} height={activeSvgH} className={styles.svg}>
           {activeParticipants.map((_, i) => (
-            <line key={`v-${i}`} x1={i * COL_WIDTH} y1={0} x2={i * COL_WIDTH} y2={activeSvgH} stroke="rgba(148,163,184,0.4)" strokeWidth="4" strokeLinecap="round" />
+            <line key={`v-${i}`} x1={i * colWidth} y1={0} x2={i * colWidth} y2={activeSvgH} stroke="rgba(148,163,184,0.4)" strokeWidth="4" strokeLinecap="round" />
           ))}
           {(activePaths.size > 0 || destinations.size > 0) && activeLines.map((rowArr, r) =>
             rowArr.map((hasLine, c) => hasLine && (
-              <line key={`h-${r}-${c}`} x1={c * COL_WIDTH} y1={r * ROW_HEIGHT + PADDING_Y} x2={(c + 1) * COL_WIDTH} y2={r * ROW_HEIGHT + PADDING_Y} stroke="rgba(148,163,184,0.4)" strokeWidth="4" strokeLinecap="round" />
+              <line key={`h-${r}-${c}`} x1={c * colWidth} y1={r * ROW_HEIGHT + PADDING_Y} x2={(c + 1) * colWidth} y2={r * ROW_HEIGHT + PADDING_Y} stroke="rgba(148,163,184,0.4)" strokeWidth="4" strokeLinecap="round" />
             ))
           )}
           {Array.from(destinations.keys()).map(idx => (
@@ -630,7 +647,7 @@ export default function GhostLeg() {
             ? { background: winnerColors.get(i), color: 'white', borderColor: 'transparent', textShadow: '0 1px 2px rgba(0,0,0,0.2)', zIndex: 10 }
             : {};
           return (
-            <div key={`r-${i}`} className={styles.resultWrapper} style={{ width: COL_WIDTH }}>
+            <div key={`r-${i}`} className={styles.resultWrapper} style={{ width: colWidth }}>
               <input
                 className={`${styles.rInput} ${winnerIndex === null ? styles.normalResult : ''} ${winnerIndex !== null && isHit ? styles.highlightHit : ''}`}
                 value={r}

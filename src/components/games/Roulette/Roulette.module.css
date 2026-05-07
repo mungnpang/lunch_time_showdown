@@ -221,3 +221,23 @@
   transform: none !important;
   box-shadow: none !important;
 }
+
+@media (max-width: 600px) {
+  .optionsList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .inputGroup {
+    flex-direction: column;
+  }
+
+  .inputGroup :global(.btn-primary) {
+    width: 100%;
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .controlsPanel {
+    padding: 1.25rem;
+  }
+}
