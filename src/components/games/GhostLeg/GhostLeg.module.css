@@ -208,7 +208,10 @@
   max-width: 450px !important;
   width: 90% !important;
   height: auto !important;
-  max-height: 90vh;
+  max-height: 90dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .bulkEditList {
@@ -217,6 +220,8 @@
   gap: 16px;
   margin: 20px 0;
   padding: 0 20px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .bulkEditItem {
