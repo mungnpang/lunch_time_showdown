@@ -63,7 +63,6 @@ export default function GhostLeg() {
   const [searchParams] = useSearchParams();
 
   // ── 반응형 컬럼 너비 ──────────────────────────────────────────────────
-  const gameBoardRef = useRef<HTMLDivElement>(null);
   const [colWidth, setColWidth] = useState(COL_WIDTH);
 
   // ── 로컬 상태 ─────────────────────────────────────────────────────────
@@ -253,16 +252,16 @@ export default function GhostLeg() {
   const activeSvgH = ROWS * ROW_HEIGHT + PADDING_Y * 2;
 
   useEffect(() => {
-    const el = gameBoardRef.current;
-    if (!el) return;
     const update = () => {
-      const available = el.offsetWidth - 32;
+      const w = window.innerWidth;
+      // 총 수평 패딩: gameMain + gameBoard (모바일/데스크탑 각각 다름)
+      const totalPad = w <= 600 ? 48 : 112;
+      const available = w - totalPad;
       setColWidth(Math.min(COL_WIDTH, Math.max(55, Math.floor(available / activeN))));
     };
     update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, [activeN]);
 
   const pathData = useMemo<PathMetrics[]>(
@@ -576,7 +575,7 @@ export default function GhostLeg() {
 
   // ── 사다리 렌더 (로컬 / 멀티 공유) ───────────────────────────────────
   const ladderBoard = (
-    <div ref={gameBoardRef} className={styles.gameBoard} style={{ alignItems: 'center' }}>
+    <div className={styles.gameBoard} style={{ alignItems: 'center' }}>
       <div className={styles.participantsRow}>
         {activeParticipants.map((p, i) => {
           const isMyCol = isMultiPlaying && i === myMultiIdx;
@@ -690,12 +689,6 @@ export default function GhostLeg() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.controlGroup}>
-          <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', background: '#e5e7eb', color: '#374151', borderRadius: '12px' }}
-            onClick={() => navigate(-1)}>
-            ← 돌아가기
-          </button>
-        </div>
         <div className={styles.localControls}>
           <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#ccfbf1', color: '#0d9488' }} onClick={addColumn} disabled={numParticipants >= 8}>인원 +</button>
           <button className={`btn-primary ${styles.controlBtn}`} style={{ background: '#cfd9ff', color: '#4158d6' }} onClick={removeColumn} disabled={numParticipants <= 2}>인원 -</button>

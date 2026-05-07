@@ -1,32 +1,23 @@
 import { useNavigate } from 'react-router-dom';
+import styles from './PrivacyPolicy.module.css';
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg-color-1)' }}>
-      <header className="glass-panel animate-fade-in" style={{
-        margin: '1rem',
-        padding: '1rem 2rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderRadius: '16px',
-      }}>
-        <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>
-          개인정보처리방침
-        </h2>
+      <header className={`glass-panel animate-fade-in ${styles.header}`}>
+        <h2 className={styles.headerTitle}>개인정보처리방침</h2>
         <button
-          className="btn-primary"
-          style={{ padding: '8px 20px', fontSize: '1rem' }}
+          className={`btn-primary ${styles.headerBtn}`}
           onClick={() => navigate('/')}
         >
           ← 메인으로
         </button>
       </header>
 
-      <main style={{ flex: 1, padding: '1.5rem', maxWidth: '960px', margin: '0 auto', width: '100%' }}>
-        <div className="glass-panel animate-fade-in" style={{ padding: '2.5rem', borderRadius: '20px', lineHeight: 1.8 }}>
+      <main className={styles.main}>
+        <div className={`glass-panel animate-fade-in ${styles.panel}`}>
 
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
             시행일: 2026년 4월 12일 &nbsp;·&nbsp; 최종 수정일: 2026년 5월 6일
@@ -148,13 +139,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
   const lastCol = headers.length - 1;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
+  const cellPad = isMobile ? '7px 8px' : '10px 14px';
+  const fontSize = isMobile ? '0.8rem' : '0.9rem';
   return (
     <div style={{ overflowX: 'auto', marginTop: '0.75rem' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', tableLayout: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize, tableLayout: 'auto' }}>
         <thead>
           <tr>
             {headers.map((h, i) => (
-              <th key={h} style={{ textAlign: 'left', padding: '10px 14px', background: 'rgba(var(--accent-primary-rgb), 0.07)', color: 'var(--text-primary)', fontWeight: 700, borderBottom: '2px solid var(--glass-border)', whiteSpace: 'nowrap', width: i === lastCol ? '100%' : undefined }}>
+              <th key={h} style={{ textAlign: 'left', padding: cellPad, background: 'rgba(var(--accent-primary-rgb), 0.07)', color: 'var(--text-primary)', fontWeight: 700, borderBottom: '2px solid var(--glass-border)', whiteSpace: 'nowrap', width: i === lastCol ? '100%' : undefined }}>
                 {h}
               </th>
             ))}
@@ -164,7 +158,7 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
           {rows.map((row, i) => (
             <tr key={i} style={{ borderBottom: '1px solid var(--glass-border)' }}>
               {row.map((cell, j) => (
-                <td key={j} style={{ padding: '10px 14px', color: 'var(--text-secondary)', verticalAlign: 'middle', whiteSpace: j < lastCol ? 'nowrap' : 'normal' }}>
+                <td key={j} style={{ padding: cellPad, color: 'var(--text-secondary)', verticalAlign: 'top', whiteSpace: 'normal' }}>
                   {cell}
                 </td>
               ))}
