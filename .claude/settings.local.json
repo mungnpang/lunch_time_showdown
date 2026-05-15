@@ -25,7 +25,8 @@
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "Bash(file /Users/jacob/Desktop/mungnpang/lunch_time_showdown/src/assets/thumbnails/*.png)",
       "Bash(npm list:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(/Users/jacob/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)"
     ]
   }
 }
