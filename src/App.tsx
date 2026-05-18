@@ -15,6 +15,11 @@ const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 
 type GameId = 'roulette' | 'ghostleg' | 'drawing' | 'bomb';
 
+interface GameSeoContent {
+  heading: string;
+  body: string;
+}
+
 interface GameInfo {
   id: GameId;
   name: string;
@@ -22,13 +27,42 @@ interface GameInfo {
   thumbnail: string;
   minCapacity?: string;
   capacity: string;
+  seoContent: GameSeoContent;
 }
 
 const GAMES: GameInfo[] = [
-  { id: 'roulette', name: '돌림판',     description: '확률 기반 회전 돌림판',             thumbnail: rouletteThumb, minCapacity: '최소 2항목', capacity: '최대 20항목' },
-  { id: 'ghostleg', name: '사다리 타기', description: '운명의 길을 따라가는 사다리 게임',   thumbnail: ghostlegThumb, minCapacity: '최소 2명',   capacity: '최대 8명'    },
-  { id: 'drawing',  name: '제비 뽑기',  description: '간단하고 공정한 무작위 뽑기',        thumbnail: drawingThumb,  minCapacity: '최소 2항목', capacity: '최대 100항목' },
-  { id: 'bomb',     name: '폭탄 돌리기', description: '보이지 않는 타이머, 숨막히는 긴장감', thumbnail: bombThumb,    minCapacity: '최소 2명',   capacity: '최대 8명'    },
+  {
+    id: 'roulette', name: '돌림판', description: '확률 기반 회전 돌림판',
+    thumbnail: rouletteThumb, minCapacity: '최소 2항목', capacity: '최대 20항목',
+    seoContent: {
+      heading: '돌려돌려 돌림판',
+      body: '돌림판을 돌려 무작위로 결과를 뽑는 도구입니다. 최대 20개 항목을 자유롭게 추가 할 수 있습니다.',
+    },
+  },
+  {
+    id: 'ghostleg', name: '사다리 타기', description: '운명의 길을 따라가는 사다리 게임',
+    thumbnail: ghostlegThumb, minCapacity: '최소 2명', capacity: '최대 8명',
+    seoContent: {
+      heading: '사다리 타기',
+      body: '참가자 이름과 결과 항목을 입력하면 사다리가 자동으로 생성됩니다. 멀티 플레이에서는 참가 유저들끼리 출발점을 사전에 선택할 수 있으며, 랜덤하게 생성되는 사다리 형태에 따라 한명의 당첨자를 가리게 됩니다. 최대 8명이 함께할 수 있습니다.',
+    },
+  },
+  {
+    id: 'drawing', name: '제비 뽑기', description: '간단하고 공정한 무작위 뽑기',
+    thumbnail: drawingThumb, minCapacity: '최소 2항목', capacity: '최대 100항목',
+    seoContent: {
+      heading: '제비 뽑기',
+      body: '총 제비수와 당첨 제비 갯수를 사전에 설정하고 게임을 진행할 수 있습니다. 최대 100개 항목을 등록할 수 있으며, 멀티플레이 시에는 최대 20명 까지 참가 가능합니다.',
+    },
+  },
+  {
+    id: 'bomb', name: '폭탄 돌리기', description: '보이지 않는 타이머, 숨막히는 긴장감',
+    thumbnail: bombThumb, minCapacity: '최소 2명', capacity: '최대 8명',
+    seoContent: {
+      heading: '폭탄 돌리기',
+      body: '사전 설정한 범위 내에서 보이지 않는 타이머로 작동하는 폭탄을 차례로 넘기는 게임입니다. 폭탄이 터지는 순간 들고 있는 사람이 벌칙을 받습니다. 최대 8명이 함께 즐길 수 있습니다.',
+    },
+  },
 ];
 
 const GAME_COMPONENTS: Record<GameId, ComponentType> = {
@@ -95,6 +129,22 @@ function GamePage() {
           </Suspense>
         </ErrorBoundary>
       </main>
+
+      <section style={{
+        padding: '2rem 1.5rem 3rem',
+        maxWidth: '720px',
+        margin: '0 auto',
+        width: '100%',
+        boxSizing: 'border-box',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
+      }}>
+        <h2 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem', color: 'var(--text-secondary)', opacity: 0.7 }}>
+          {game.seoContent.heading}
+        </h2>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.75, opacity: 0.7 }}>
+          {game.seoContent.body}
+        </p>
+      </section>
     </div>
   );
 }
